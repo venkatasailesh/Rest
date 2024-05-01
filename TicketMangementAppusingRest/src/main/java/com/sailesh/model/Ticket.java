@@ -13,6 +13,7 @@ public class Ticket {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer tid;
 	private String name;
+	private String city;
 	private String packageType;
 	private Double budget;
 	
