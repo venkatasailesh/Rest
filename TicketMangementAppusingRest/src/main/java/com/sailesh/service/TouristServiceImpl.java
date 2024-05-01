@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sailesh.dao.TouristRepo;
+import com.sailesh.exception.TouristNotFoundException;
 import com.sailesh.model.Ticket;
 
 @Service("service")
@@ -31,15 +32,58 @@ public class TouristServiceImpl implements TouristService {
 
 	@Override
 	public Ticket findbyId(Integer id) {
-		Optional<Ticket> optional = repo.findById(id);
+//		Optional<Ticket> optional = repo.findById(id);
+//		if(optional.isPresent()) {
+//			return optional.get();
+//		}
+//		else {
+//			throw new TouristNotFoundException("Tourist not found with id  "+id);
+//		}
+//		
+		return repo.findById(id).orElseThrow(()->new TouristNotFoundException("Tourist not found with id  "+id));
+		
+		
+	}
+
+	@Override
+	public String updateTouristDetails(Ticket ticket) {
+		Optional<Ticket> optional = repo.findById(ticket.getTid());
 		if(optional.isPresent()) {
-			return optional.get();
+			repo.save(ticket);
+			return "data Upadated successfully on id  " +ticket.getTid();
 		}
 		else {
-			return null;
+		 throw new TouristNotFoundException("update not done opn id "+ ticket.getTid());
+		}
+
+	}
+
+	@Override
+	public String updateTouristbyBudget(Integer id, Float hike) {
+		Optional<Ticket> optional = repo.findById(id);
+		if(optional.isPresent()) {
+			Ticket ticket = optional.get();
+			ticket.setBudget(ticket.getBudget()+(ticket.getBudget()*(hike/100)));
+			repo.save(ticket);
+			return "Ticket is updated successfully on id "+ticket.getTid();
+		}
+		else {
+			throw new TouristNotFoundException("Ticket not found for id " + id);
 		}
 		
-		
+	}
+
+	@Override
+	public String deleteTouristbyId(Integer id) {
+		Optional<Ticket> optional = repo.findById(id);
+		if(optional.isPresent()) {
+		 repo.delete(optional.get());
+		 return "Ticket is deleted successfully on id "+ id;
+		}
+		else {
+			throw new TouristNotFoundException("Ticket is not deleted ");
+		}
+	
 	}
 
 }
